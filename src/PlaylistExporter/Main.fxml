@@ -8,7 +8,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="355.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button fx:id="playlistBtn" layoutX="391.0" layoutY="41.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="176.0" text="Choose playlist..." />
+      <Button fx:id="playlistBtn" layoutX="391.0" layoutY="41.0" mnemonicParsing="false" onAction="#playlistBtnClick" prefHeight="27.0" prefWidth="176.0" text="Choose playlist..." />
       <Button fx:id="targetBtn" layoutX="391.0" layoutY="102.0" mnemonicParsing="false" text="Choose target directory..." />
       <Label fx:id="playlistLbl" layoutX="34.0" layoutY="46.0" prefHeight="17.0" prefWidth="329.0" />
       <Label fx:id="targetLbl" layoutX="35.0" layoutY="107.0" prefHeight="17.0" prefWidth="329.0" />
