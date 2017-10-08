@@ -24,7 +24,7 @@ public class PlaylistExporter extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
         Scene scene = new Scene(root);
         stage = primaryStage;
-        stage.setTitle("PlaylistExporter");
+        stage.setTitle("PlaylistExporter 1.0 by Rudi Novik");
         stage.setScene(scene);
         stage.show();
     }
