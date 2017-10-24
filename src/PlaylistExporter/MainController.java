@@ -2,11 +2,14 @@ package PlaylistExporter;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -34,6 +37,9 @@ public class MainController {
     Button targetBtn;
 
     @FXML
+    Button helpBtn;
+
+    @FXML
     Button goBtn;
 
     @FXML
@@ -41,9 +47,6 @@ public class MainController {
 
     @FXML
     Label targetLbl;
-
-    @FXML
-    TextArea statusTxt;
 
     //Attributes
     File playlist;
@@ -71,13 +74,8 @@ public class MainController {
 
     @FXML
     protected void goBtnClick(ActionEvent event) {
-
-        statusTxt.setText("");
-        statusTxt.setStyle("-fx-text-fill: black;");
-
-
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = null;
+        DocumentBuilder db;
         List<String> paths = null;
         try {
             db = dbf.newDocumentBuilder();
@@ -110,14 +108,9 @@ public class MainController {
             }
         } catch (SAXException | IOException | ParserConfigurationException e) {
             e.printStackTrace();
-            statusTxt.setStyle("-fx-text-fill: red;");
-            statusTxt.setText("Reading playlist failed!");
         }
 
         if (paths != null) {
-
-            statusTxt.appendText("\nCopying files to " + target.getPath() + "...\n");
-
             for (String s : paths) {
                 //Windows
                 String sourceStr = s.replaceAll("file://localhost", "");
@@ -129,24 +122,23 @@ public class MainController {
                     e.printStackTrace();
                 }
                 File source = new File(sourceStr);
-                statusTxt.appendText("\nCopying " + source.getPath() + "...\n");
                 try {
                     FileUtils.copyFileToDirectory(source, target);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-
-            statusTxt.appendText("\nFinished copying!");
-
         } else {
-            statusTxt.setStyle("-fx-text-fill: red;");
-            statusTxt.setText("Reading playlist failed!");
+            //show message box with error
         }
+    }
 
-
-
-
-
+    public void helpBtnClick(ActionEvent event) throws IOException {
+        Parent root;
+        root = FXMLLoader.load(getClass().getResource("Help.fxml"));
+        Stage stage = new Stage();
+        stage.setTitle("PlaylistExporter - Help");
+        stage.setScene(new Scene(root, 580, 250));
+        stage.show();
     }
 }
