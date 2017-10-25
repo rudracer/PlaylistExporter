@@ -1,5 +1,6 @@
 package PlaylistExporter;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -67,6 +68,8 @@ public class MainController {
 //        goBar.getStyleClass().add("disarmed");
         //goBar.getStyleClass().add("button");
         //goBar.setStyle("-fx-background-color: #d0d0d0");
+        playlistLbl.setStyle("-fx-background-color: #dddddd");
+        targetLbl.setStyle("-fx-background-color: #dddddd");
     }
 
     @FXML
@@ -149,7 +152,14 @@ public class MainController {
                         try {
                             sourceStr = URLDecoder.decode(sourceStr, "UTF-8");
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            Platform.runLater(() -> {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Unsupported Encoding!");
+                                alert.setContentText(
+                                        "Check that your playlist file's encoding is " +
+                                                "\"UTF-8\" and try again!");
+                                alert.showAndWait();
+                            });
                         }
                         File source = new File(sourceStr);
                         try {
@@ -159,7 +169,17 @@ public class MainController {
                             //Thread.sleep(500); //Test
                             FileUtils.copyFileToDirectory(source, target);
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            Platform.runLater(() -> {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setContentText(
+                                        "Ooops. Something went wrong. \n" +
+                                                "Maybe a path is incorrect, or an external " +
+                                                "drive is missing.\n" +
+                                                "Check this and try again!\n" +
+                                                "Hint: You could re-export the playlist " +
+                                                "file from iTunes.");
+                                alert.showAndWait();
+                            });
                         }
                     }
                 } else {
@@ -176,9 +196,13 @@ public class MainController {
         goLbl.textProperty().bind(task.messageProperty());
         task.setOnFailed(evt -> {
             Throwable e = task.getException();
+//            Alert alert = new Alert(Alert.AlertType.WARNING);
+//            alert.setTitle(e.getClass().getSimpleName());
+//            alert.setContentText(e.getLocalizedMessage());
+//            alert.showAndWait();
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle(e.getClass().getSimpleName());
-            alert.setContentText(e.getLocalizedMessage());
+            alert.setTitle("Reminder");
+            alert.setContentText("Please choose both playlist file and target directory.");
             alert.showAndWait();
             goBar.progressProperty().unbind();
             goLbl.textProperty().unbind();
@@ -187,10 +211,10 @@ public class MainController {
         });
         try {
             new Thread(task).start();
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle(e.getClass().getSimpleName());
-            alert.setContentText(e.getLocalizedMessage());
+            alert.setTitle("Reminder");
+            alert.setContentText("Please choose both playlist file and target directory.");
             alert.showAndWait();
         }
     }
