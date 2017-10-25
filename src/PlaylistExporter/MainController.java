@@ -1,5 +1,6 @@
 package PlaylistExporter;
 
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -57,9 +58,15 @@ public class MainController {
     //Attributes
     File playlist;
     File target;
+    int armed = 0; //simulate button properties with progressBar;
+    //TODO: make focus possible
 
     public void initialize() {
-        goBar.getStyleClass().add("button");
+        //goBar.getStyleClass().clear();
+//        goBar.getStyleClass().removeAll("armed", "highlighted");
+//        goBar.getStyleClass().add("disarmed");
+        //goBar.getStyleClass().add("button");
+        //goBar.setStyle("-fx-background-color: #d0d0d0");
     }
 
     @FXML
@@ -94,6 +101,7 @@ public class MainController {
 
     @FXML
     protected void goBarClick() {
+        if (armed < 2) return; //simulate button behaviour
         Task task = new Task<Void>() {
             public Void call() throws InterruptedException, ParserConfigurationException, IOException, SAXException {
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -148,14 +156,18 @@ public class MainController {
                             i++;
                             updateProgress(i, paths.size());
                             updateMessage(""+i/(double)paths.size()*100+"%");
-                            Thread.sleep(500); //Test
+                            //Thread.sleep(500); //Test
                             FileUtils.copyFileToDirectory(source, target);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                 } else {
-                    //show message box with error
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setContentText(
+                            "Ooops. Something went wrong. " +
+                                    "Check your playlist file and try again!");
+                    alert.showAndWait();
                 }
                 return null;
             }
@@ -183,8 +195,42 @@ public class MainController {
         }
     }
 
-    public void goBarPressed() {
+    public void goBarArm() {
+        goBar.getScene().getStylesheets().removeAll(
+                getClass().getResource("armed.css").toExternalForm(),
+                getClass().getResource("disarmed.css").toExternalForm(),
+                getClass().getResource("highlighted.css").toExternalForm()
+        );
+//        goBar.getStyleClass().removeAll("highlighted", "armed", "disarmed");
+        armed++;
+        if (armed == 1){
+            goBar.getScene().getStylesheets().add(
+                    getClass().getResource("highlighted.css").toExternalForm()
+            );
+        }
+        if (armed == 2){
+            goBar.getScene().getStylesheets().add(
+                    getClass().getResource("armed.css").toExternalForm()
+            );
+        }
+//        if (armed == 1) goBar.getStyleClass().add("highlighted");//goBar.setStyle("-fx-background-color: derive(#d0d0d0, 20%)");
+//        if (armed == 2) goBar.getStyleClass().add("armed");//goBar.setStyle("-fx-background-color: derive(#d0d0d0, -20%)");
+//        System.out.println("armed: " + armed);
+    }
 
+    public void goBarDisarm() {
+        goBar.getScene().getStylesheets().removeAll(
+                getClass().getResource("armed.css").toExternalForm(),
+                getClass().getResource("disarmed.css").toExternalForm(),
+                getClass().getResource("highlighted.css").toExternalForm()
+        );
+        //goBar.getStyleClass().removeAll("highlighted", "armed", "disarmed");
+        armed = 0;
+//        goBar.getStyleClass().add("disarmed");//goBar.setStyle("-fx-background-color: #d0d0d0");
+        goBar.getScene().getStylesheets().add(
+                getClass().getResource("disarmed.css").toExternalForm()
+        );
+//        System.out.println("fully disarmed: " + armed);
     }
 
     public void helpBtnClick(ActionEvent event) throws IOException {

@@ -12,7 +12,7 @@
       <Label fx:id="playlistLbl" layoutX="244.0" layoutY="46.0" prefHeight="17.0" prefWidth="329.0" />
       <Label fx:id="targetLbl" layoutX="244.0" layoutY="107.0" prefHeight="17.0" prefWidth="329.0" />
       <Button fx:id="helpBtn" layoutX="35.0" onAction="#helpBtnClick" layoutY="163.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="188.0" text="Help..." />
-      <ProgressBar fx:id="goBar" onMouseReleased="#goBarClick" onMousePressed="#goBarPressed" layoutX="244.0" layoutY="163.0" prefHeight="31.0" prefWidth="329.0" progress="0.0" />
-      <Label fx:id="goLbl" layoutX="396.0" layoutY="168.0" text="GO!" />
+      <ProgressBar fx:id="goBar" onMouseReleased="#goBarClick" onMousePressed="#goBarArm" onMouseDragReleased="#goBarDisarm" onMouseExited="#goBarDisarm" onMouseEntered="#goBarArm" layoutX="244.0" layoutY="163.0" prefHeight="31.0" prefWidth="329.0" progress="0.0" />
+      <Label fx:id="goLbl" mouseTransparent="true" layoutX="396.0" layoutY="168.0" text="GO!" />
    </children>
 </AnchorPane>
