@@ -1,5 +1,6 @@
 package PlaylistExporter;
 
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -40,13 +42,16 @@ public class MainController {
     Button helpBtn;
 
     @FXML
-    Button goBtn;
+    ProgressBar goBar;
 
     @FXML
     Label playlistLbl;
 
     @FXML
     Label targetLbl;
+
+    @FXML
+    Label goLbl;
 
     //Attributes
     File playlist;
@@ -73,64 +78,79 @@ public class MainController {
 
 
     @FXML
-    protected void goBtnClick(ActionEvent event) {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db;
-        List<String> paths = null;
-        try {
-            db = dbf.newDocumentBuilder();
-            Document doc = db.parse(playlist);
-            NodeList nodeList = doc.getElementsByTagName("dict");
-            paths = new ArrayList<>();
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-                NodeList childList = node.getChildNodes();
-                for (int j = 0; j < childList.getLength(); j++) {
-                    Node child = childList.item(j);
+    protected void goBarClick() throws InterruptedException {
+        Task task = new Task<Void>() {
+            public Void call() {
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db;
+                List<String> paths = null;
+                try {
+                    db = dbf.newDocumentBuilder();
+                    Document doc = db.parse(playlist);
+                    NodeList nodeList = doc.getElementsByTagName("dict");
+                    paths = new ArrayList<>();
+                    for (int i = 0; i < nodeList.getLength(); i++) {
+                        Node node = nodeList.item(i);
+                        NodeList childList = node.getChildNodes();
+                        for (int j = 0; j < childList.getLength(); j++) {
+                            Node child = childList.item(j);
 
-                    //at this level, nodeName can be "string", "key" or "integer"
-                    if (child.getNodeName().equals("key")) {
-                        //the Node with nodeName key has a child with the
-                        //actual key as its nodeValue
-                        Node keyNode = child.getFirstChild();
-                        //System.out.println(keyNode.getNodeValue());
-                        if (keyNode.getNodeValue().equals("Location")) {
-                            //if value is "Location", this means that the actual location
-                            //is in the node after this node's parent "key"-node
-                            Node location = childList.item(j + 1).getFirstChild();
+                            //at this level, nodeName can be "string", "key" or "integer"
+                            if (child.getNodeName().equals("key")) {
+                                //the Node with nodeName key has a child with the
+                                //actual key as its nodeValue
+                                Node keyNode = child.getFirstChild();
+                                //System.out.println(keyNode.getNodeValue());
+                                if (keyNode.getNodeValue().equals("Location")) {
+                                    //if value is "Location", this means that the actual location
+                                    //is in the node after this node's parent "key"-node
+                                    Node location = childList.item(j + 1).getFirstChild();
 
-                            if (!paths.contains(location.getNodeValue())) {
-                                paths.add(location.getNodeValue());
+                                    if (!paths.contains(location.getNodeValue())) {
+                                        paths.add(location.getNodeValue());
+                                    }
+                                }
                             }
                         }
                     }
+                } catch (SAXException | IOException | ParserConfigurationException e) {
+                    e.printStackTrace();
                 }
-            }
-        } catch (SAXException | IOException | ParserConfigurationException e) {
-            e.printStackTrace();
-        }
 
-        if (paths != null) {
-            for (String s : paths) {
-                //Windows
-                String sourceStr = s.replaceAll("file://localhost", "");
-                //Mac
-                sourceStr = sourceStr.replaceAll("file:/", "");
-                try {
-                    sourceStr = URLDecoder.decode(sourceStr, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                if (paths != null) {
+                    updateProgress(0, paths.size());
+                    int i = 0;
+                    for (String s : paths) {
+                        //Windows
+                        String sourceStr = s.replaceAll("file://localhost", "");
+                        //Mac
+                        sourceStr = sourceStr.replaceAll("file:/", "");
+                        try {
+                            sourceStr = URLDecoder.decode(sourceStr, "UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        File source = new File(sourceStr);
+                        try {
+                            i++;
+                            updateProgress(i, paths.size());
+                            FileUtils.copyFileToDirectory(source, target);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    //show message box with error
                 }
-                File source = new File(sourceStr);
-                try {
-                    FileUtils.copyFileToDirectory(source, target);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                return null;
             }
-        } else {
-            //show message box with error
-        }
+        };
+        goBar.progressProperty().bind(task.progressProperty());
+        new Thread(task).start();
+    }
+
+    public void goBarPressed() {
+
     }
 
     public void helpBtnClick(ActionEvent event) throws IOException {

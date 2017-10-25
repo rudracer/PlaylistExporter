@@ -2,15 +2,17 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PlaylistExporter.MainController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="218.0" prefWidth="599.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PlaylistExporter.MainController">
    <children>
       <Button fx:id="playlistBtn" layoutX="35.0" layoutY="41.0" mnemonicParsing="false" onAction="#playlistBtnClick" prefHeight="31.0" prefWidth="188.0" text="Choose playlist..." />
       <Button fx:id="targetBtn" layoutX="35.0" layoutY="102.0" mnemonicParsing="false" onAction="#targetBtnClick" prefHeight="31.0" prefWidth="188.0" text="Choose target directory..." />
       <Label fx:id="playlistLbl" layoutX="244.0" layoutY="46.0" prefHeight="17.0" prefWidth="329.0" />
       <Label fx:id="targetLbl" layoutX="244.0" layoutY="107.0" prefHeight="17.0" prefWidth="329.0" />
-      <Button fx:id="goBtn" layoutX="385.0" layoutY="178.0" mnemonicParsing="false" onAction="#goBtnClick" prefHeight="64.0" prefWidth="188.0" text="GO!" />
-      <Button fx:id="helpBtn" layoutX="35.0" layoutY="178.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="188.0" text="Help..." onAction="#helpBtnClick"/>
+      <Button fx:id="helpBtn" layoutX="35.0" onAction="#helpBtnClick" layoutY="163.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="188.0" text="Help..." />
+      <ProgressBar fx:id="goBar" onMouseReleased="#goBarClick" onMousePressed="#goBarPressed" layoutX="244.0" layoutY="163.0" prefHeight="31.0" prefWidth="329.0" progress="0.0" />
+      <Label fx:id="goLbl" layoutX="396.0" layoutY="168.0" text="GO!" />
    </children>
 </AnchorPane>
