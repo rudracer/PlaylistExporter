@@ -59,28 +59,38 @@ public class MainController {
 
     @FXML
     protected void playlistBtnClick(ActionEvent event) {
+        goBar.progressProperty().unbind();
+        goLbl.textProperty().unbind();
+        goBar.setProgress(0);
+        goLbl.setText("GO!");
         FileChooser.ExtensionFilter extensionFilter =
                 new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Choose Playlist File");
         chooser.getExtensionFilters().add(extensionFilter);
-        playlist = chooser.showOpenDialog(playlistBtn.getScene().getWindow());
-        playlistLbl.setText(playlist.getPath());
+        File playlistTemp = chooser.showOpenDialog(playlistBtn.getScene().getWindow());
+        if (playlistTemp != null) playlist = playlistTemp;
+        playlistLbl.setText(playlist == null ? "" : playlist.getPath());
     }
 
     @FXML
     protected void targetBtnClick(ActionEvent event) {
+        goBar.progressProperty().unbind();
+        goLbl.textProperty().unbind();
+        goBar.setProgress(0);
+        goLbl.setText("GO!");
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Choose Target Directory");
-        target = chooser.showDialog(targetBtn.getScene().getWindow());
-        targetLbl.setText(target.getPath());
+        File targetTemp = chooser.showDialog(targetBtn.getScene().getWindow());
+        if (targetTemp != null) target = targetTemp;
+        targetLbl.setText(target == null ? "" : target.getPath());
     }
 
 
     @FXML
     protected void goBarClick() throws InterruptedException {
         Task task = new Task<Void>() {
-            public Void call() {
+            public Void call() throws InterruptedException {
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 DocumentBuilder db;
                 List<String> paths = null;
@@ -119,6 +129,7 @@ public class MainController {
 
                 if (paths != null) {
                     updateProgress(0, paths.size());
+                    updateMessage("0.0%");
                     int i = 0;
                     for (String s : paths) {
                         //Windows
@@ -134,6 +145,8 @@ public class MainController {
                         try {
                             i++;
                             updateProgress(i, paths.size());
+                            updateMessage(""+i/(double)paths.size()*100+"%");
+                            Thread.sleep(500); //Test
                             FileUtils.copyFileToDirectory(source, target);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -146,6 +159,7 @@ public class MainController {
             }
         };
         goBar.progressProperty().bind(task.progressProperty());
+        goLbl.textProperty().bind(task.messageProperty());
         new Thread(task).start();
     }
 
