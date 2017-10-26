@@ -22,7 +22,7 @@ public class PlaylistExporter extends Application {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("disarmed.css").toExternalForm());
         stage = primaryStage;
-        stage.setTitle("PlaylistExporter 1.1 by Rudi Novik");
+        stage.setTitle("PlaylistExporter 2.0 by Rudi Novik");
         stage.setScene(scene);
         stage.show();
     }
