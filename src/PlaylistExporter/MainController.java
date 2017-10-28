@@ -265,4 +265,10 @@ public class MainController {
         stage.setScene(new Scene(root, 580, 250));
         stage.show();
     }
+
+    //TODO: Internetzwang beenden (decoder) - wenigstens richtige fehlermeldung, wenns an inet liegt
+    //TODO: clickable links to paths, show in explorer
+    //TODO: localization
+    //TODO: non-resizable help window
+    //TODO: close and donate buttons in help window
 }
